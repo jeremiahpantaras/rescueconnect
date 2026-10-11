@@ -1,206 +1,36 @@
-# Tabang Negros - Frontend
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-Modern React + Vite emergency help request web application for Negros Island.
+## Getting Started
 
-## 🚀 Features
+First, run the development server:
 
-- 📱 Mobile-first responsive design
-- 🌓 Dark/Light mode with blue theme
-- 📍 Real-time geolocation tracking
-- 🗺️ Interactive map with Leaflet
-- 🎨 Modern UI with Tailwind CSS v4
-- ⚡ Fast development with Vite
-- 🔄 Reverse geocoding for address display
-
-## 📋 Prerequisites
-
-- Node.js 18+
-- npm or yarn
-
-## 🛠️ Installation
-
-1. **Install dependencies:**
-```bash
-npm install
-```
-
-2. **Start development server:**
 ```bash
 npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
 
-App runs at: `http://localhost:5173`
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-## 📁 Project Structure
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-```
-frontend/
-├── index.html
-├── package.json
-├── vite.config.js
-├── tailwind.config.js
-├── postcss.config.js
-├── src/
-│   ├── main.jsx
-│   ├── App.jsx
-│   ├── index.css
-│   └── assets/
-└── public/
-```
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## 🎨 Tech Stack
+## Learn More
 
-- **Framework:** React 19
-- **Build Tool:** Vite 7
-- **Styling:** Tailwind CSS v4
-- **Maps:** Leaflet + React-Leaflet
-- **HTTP Client:** Axios
-- **Routing:** React Router (optional)
+To learn more about Next.js, take a look at the following resources:
 
-## 🔌 API Configuration
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-Update API URL in `src/App.jsx`:
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-```javascript
-const API_URL = 'http://127.0.0.1:8000/api/reports'
-```
+## Deploy on Vercel
 
-For production:
-```javascript
-const API_URL = 'https://your-backend-url.com/api/reports'
-```
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-## 🎨 Theme Colors
-
-**Light Mode:**
-- Background: White with blue gradient
-- Primary: Blue (#3B82F6)
-- Accent: Blue (#2563EB)
-
-**Dark Mode:**
-- Background: Dark blue gradient (#0f172a → #334155)
-- Primary: Blue (#3B82F6)
-- Accent: Blue (#60A5FA)
-
-## 📱 Testing on Mobile
-
-1. **Get your computer's IP:**
-```bash
-ifconfig | grep inet  # Mac/Linux
-ipconfig              # Windows
-```
-
-2. **Update Vite config** (already configured):
-```javascript
-server: {
-  host: true,
-  port: 5173,
-}
-```
-
-3. **Access from phone:**
-```
-http://YOUR_IP:5173
-```
-
-Make sure both devices are on the same WiFi network.
-
-## 🏗️ Build for Production
-
-```bash
-npm run build
-```
-
-Preview production build:
-```bash
-npm run preview
-```
-
-## 🧪 Linting
-
-```bash
-npm run lint
-```
-
-## 📦 Dependencies
-
-```json
-{
-  "dependencies": {
-    "react": "^19.1.16",
-    "react-dom": "^19.1.9",
-    "axios": "^1.7.9",
-    "leaflet": "^1.9.4",
-    "react-leaflet": "^5.0.0"
-  },
-  "devDependencies": {
-    "@vitejs/plugin-react": "^5.0.4",
-    "vite": "^7.1.7",
-    "tailwindcss": "^4.0.0",
-    "@tailwindcss/postcss": "^4.0.0",
-    "eslint": "^9.36.0"
-  }
-}
-```
-
-## 🌐 Browser Support
-
-- Chrome/Edge (latest)
-- Firefox (latest)
-- Safari (latest)
-- Mobile browsers (iOS Safari, Chrome Mobile)
-
-## 🚀 Deployment
-
-### Vercel
-```bash
-npm install -g vercel
-vercel
-```
-
-### Netlify
-```bash
-npm run build
-# Upload dist/ folder to Netlify
-```
-
-### GitHub Pages
-```bash
-npm run build
-# Deploy dist/ folder
-```
-
-## 🔧 Environment Variables
-
-Create `.env` file (optional):
-```env
-VITE_API_URL=http://127.0.0.1:8000/api/reports
-```
-
-Use in code:
-```javascript
-const API_URL = import.meta.env.VITE_API_URL
-```
-
-## 📝 Features Checklist
-
-- ✅ Preloader animation
-- ✅ Dark/Light mode toggle
-- ✅ Geolocation tracking
-- ✅ Interactive map
-- ✅ Reverse geocoding
-- ✅ Emergency message input
-- ✅ Success/Error notifications
-- ✅ Mobile-responsive design
-- ✅ Smooth transitions
-
-## 👨‍💻 Development Tips
-
-1. **Hot Module Replacement (HMR)** works automatically
-2. **Dark mode preference** persists in localStorage
-3. **Location permission** required for full functionality
-4. **Map tiles** from OpenStreetMap (free)
-
-## 📝 License
-
-MIT License
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

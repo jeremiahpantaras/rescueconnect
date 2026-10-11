@@ -1,0 +1,84 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-emergency: var(--emergency);
+  --color-emergency-hover: var(--emergency-hover);
+  --color-success: var(--success);
+  --color-success-hover: var(--success-hover);
+  
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-hover: var(--surface-hover);
+  --color-border: var(--border);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --font-sans: var(--font-inter);
+}
+
+:root {
+  /* Light Mode Palette */
+  --background: #ffffff;
+  --foreground: #0f172a; /* slate-900 */
+  --surface: #f8fafc; /* slate-50 */
+  --surface-hover: #f1f5f9; /* slate-100 */
+  --border: #e2e8f0; /* slate-200 */
+  --muted: #f1f5f9; /* slate-100 */
+  --muted-foreground: #64748b; /* slate-500 */
+  
+  --primary: #2563eb; /* blue-600 */
+  --primary-hover: #1d4ed8; /* blue-700 */
+  
+  --emergency: #ef4444; /* red-500 */
+  --emergency-hover: #dc2626; /* red-600 */
+  
+  --success: #10b981; /* emerald-500 */
+  --success-hover: #059669; /* emerald-600 */
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Dark Mode Palette */
+    --background: #0f172a; /* slate-900 */
+    --foreground: #f8fafc; /* slate-50 */
+    --surface: #1e293b; /* slate-800 */
+    --surface-hover: #334155; /* slate-700 */
+    --border: #334155; /* slate-700 */
+    --muted: #1e293b; /* slate-800 */
+    --muted-foreground: #94a3b8; /* slate-400 */
+    
+    --primary: #3b82f6; /* blue-500 */
+    --primary-hover: #60a5fa; /* blue-400 */
+    
+    --emergency: #f87171; /* red-400 */
+    --emergency-hover: #ef4444; /* red-500 */
+    
+    --success: #34d399; /* emerald-400 */
+    --success-hover: #10b981; /* emerald-500 */
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+}
+
+@layer utilities {
+  .glass-effect {
+    @apply bg-white/70 dark:bg-slate-900/70 backdrop-blur-md border border-white/20 dark:border-slate-800/50 shadow-sm;
+  }
+  .active-press {
+    @apply active:scale-95 transition-transform duration-200;
+  }
+  .hover-lift {
+    @apply hover:-translate-y-1 hover:shadow-lg transition-all duration-300;
+  }
+}
