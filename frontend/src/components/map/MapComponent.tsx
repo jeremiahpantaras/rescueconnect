@@ -6,9 +6,10 @@ import L from 'leaflet';
 
 // Setup default marker icon
 const defaultIcon = new L.Icon({
-  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+  // Served from /public/leaflet so the pin still shows with no internet (copied from the leaflet package).
+  iconUrl: '/leaflet/marker-icon.png',
+  iconRetinaUrl: '/leaflet/marker-icon-2x.png',
+  shadowUrl: '/leaflet/marker-shadow.png',
   iconSize: [25, 41],
   iconAnchor: [12, 41],
   popupAnchor: [1, -34],
@@ -16,6 +17,9 @@ const defaultIcon = new L.Icon({
 });
 
 L.Marker.prototype.options.icon = defaultIcon;
+
+// OpenStreetMap tiles unless NEXT_PUBLIC_MAP_TILE_URL overrides them.
+const DEFAULT_TILE_URL = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 
 interface MapComponentProps {
   center: { lat: number; lng: number };
@@ -57,7 +61,7 @@ export default function MapComponent({ center, onLocationChange, isDraggable = t
     >
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        url={process.env.NEXT_PUBLIC_MAP_TILE_URL || DEFAULT_TILE_URL}
       />
       <MapUpdater center={center} />
       

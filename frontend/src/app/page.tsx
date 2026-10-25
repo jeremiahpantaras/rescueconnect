@@ -7,13 +7,17 @@ import { FloodReportForm } from '@/components/reports/FloodReportForm';
 import { UrgentResponseForm } from '@/components/emergency/UrgentResponseForm';
 import { SubmissionSuccess } from '@/components/reports/SubmissionSuccess';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { SubmissionQueued } from '@/components/outbox/SubmissionQueued';
+import type { SubmitOutcome, SubmittedReport } from '@/lib/api';
+import { onReportSent, type OutboxItem } from '@/lib/outbox';
 
-type ViewState = 'loading' | 'onboarding' | 'dashboard' | 'flood-form' | 'urgent-form' | 'success';
+type ViewState = 'loading' | 'onboarding' | 'dashboard' | 'flood-form' | 'urgent-form' | 'success' | 'queued';
 
 export default function RescueConnectApp() {
   const [view, setView] = useState<ViewState>('onboarding');
   const [reportLocation, setReportLocation] = useState<{ lat: number; lng: number } | null>(null);
-  const [referenceNumber, setReferenceNumber] = useState<string | null>(null);
+  const [submittedReport, setSubmittedReport] = useState<SubmittedReport | null>(null);
+  const [queuedItem, setQueuedItem] = useState<OutboxItem | null>(null);
 
   useEffect(() => {
     try {
@@ -26,6 +30,28 @@ export default function RescueConnectApp() {
       console.warn("Storage access denied or failed", e);
     }
   }, []);
+
+  const handleSubmitted = (outcome: SubmitOutcome) => {
+    if (outcome.kind === 'sent') {
+      setSubmittedReport(outcome.report);
+      setView('success');
+    } else {
+      setQueuedItem(outcome.item);
+      setView('queued');
+    }
+  };
+
+  // A report saved offline can be delivered while the person is still on the "saved" screen:
+  // switch to the normal "Report Submitted" screen with its tracking code.
+  useEffect(() => {
+    if (view !== 'queued' || !queuedItem) return;
+    return onReportSent(({ item, report }) => {
+      if (item.id !== queuedItem.id) return;
+      setSubmittedReport(report);
+      setQueuedItem(null);
+      setView('success');
+    });
+  }, [view, queuedItem]);
 
   return (
     <ErrorBoundary>
@@ -51,10 +77,7 @@ export default function RescueConnectApp() {
             <FloodReportForm
               location={reportLocation}
               onBack={() => setView('dashboard')}
-              onSuccess={(ref) => {
-                setReferenceNumber(ref);
-                setView('success');
-              }}
+              onSuccess={handleSubmitted}
             />
           )}
 
@@ -62,18 +85,26 @@ export default function RescueConnectApp() {
             <UrgentResponseForm
               location={reportLocation}
               onBack={() => setView('dashboard')}
-              onSuccess={(ref) => {
-                setReferenceNumber(ref);
-                setView('success');
+              onSuccess={handleSubmitted}
+            />
+          )}
+
+          {view === 'queued' && queuedItem && (
+            <SubmissionQueued
+              item={queuedItem}
+              onDone={() => {
+                setQueuedItem(null);
+                setReportLocation(null);
+                setView('dashboard');
               }}
             />
           )}
 
-          {view === 'success' && referenceNumber && (
+          {view === 'success' && submittedReport && (
             <SubmissionSuccess
-              referenceNumber={referenceNumber}
+              trackingCode={submittedReport.tracking_code}
               onDone={() => {
-                setReferenceNumber(null);
+                setSubmittedReport(null);
                 setReportLocation(null);
                 setView('dashboard');
               }}

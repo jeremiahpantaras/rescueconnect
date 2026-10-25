@@ -2,10 +2,12 @@
 
 import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import { LocateFixed, AlertTriangle, Waves } from 'lucide-react';
+import { LocateFixed, AlertTriangle, Waves, ClipboardList } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Header } from '@/components/layout/Header';
+import { LinkButton } from '@/components/ui/LinkButton';
 import { SearchLocation } from './SearchLocation';
+import { useOnlineStatus } from '@/lib/useOnlineStatus';
 
 // Dynamically import MapComponent to disable SSR since leaflet requires window
 const MapComponent = dynamic(() => import('./MapComponent'), { 
@@ -29,6 +31,7 @@ export function MapDashboard({ onReportFlood, onUrgentResponse }: MapDashboardPr
   const [center, setCenter] = useState(DEFAULT_CENTER);
   const [isLocating, setIsLocating] = useState(false);
   const [locationError, setLocationError] = useState<string | null>(null);
+  const online = useOnlineStatus();
 
   const getCurrentLocation = () => {
     setIsLocating(true);
@@ -63,7 +66,15 @@ export function MapDashboard({ onReportFlood, onUrgentResponse }: MapDashboardPr
 
   return (
     <div className="flex flex-col h-screen bg-background relative overflow-hidden">
-      <Header title="RescueConnect" />
+      <Header
+        title="RescueConnect"
+        rightAction={
+          <LinkButton href="/status" variant="ghost" size="sm" aria-label="Check the status of a report you submitted">
+            <ClipboardList className="mr-1.5 h-4 w-4" />
+            My reports
+          </LinkButton>
+        }
+      />
 
       {/* Map Area */}
       <div className="flex-1 relative w-full h-full">
@@ -89,6 +100,14 @@ export function MapDashboard({ onReportFlood, onUrgentResponse }: MapDashboardPr
             Adjust the pin to the exact location
           </div>
         </div>
+        {!online && (
+          <div role="status" className="absolute top-32 left-0 right-0 z-[400] flex justify-center px-4 pointer-events-none">
+            <div className="max-w-sm rounded-xl border border-amber-500/50 bg-background/95 px-4 py-2 text-center text-sm text-foreground shadow-md">
+              <strong>You are offline.</strong> The map background may be blank, but your location and pin still work.
+              You can still report: it will be saved and sent when you have a signal.
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Bottom Action Drawer */}

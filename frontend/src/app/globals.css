@@ -71,6 +71,11 @@
   }
 }
 
+/* Bottom padding that clears the device home indicator but never drops below 1rem. */
+@utility pb-safe {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
 @layer utilities {
   .glass-effect {
     @apply bg-white/70 dark:bg-slate-900/70 backdrop-blur-md border border-white/20 dark:border-slate-800/50 shadow-sm;
