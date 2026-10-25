@@ -1,0 +1,51 @@
+{% extends "admin/index.html" %}{# Django resolves this to the stock admin index, so the app list and "Recent actions" sidebar are kept #}
+
+{% block content %}
+{% if rc_dashboard %}
+<section class="rc-dashboard" aria-label="Report summary">
+  <div class="rc-kpis">
+    <div class="rc-kpi"><span class="rc-kpi__value" data-rc-kpi="active">{{ rc_dashboard.active }}</span><span class="rc-kpi__label">Active reports</span></div>
+    <div class="rc-kpi rc-kpi--urgent"><span class="rc-kpi__value" data-rc-kpi="urgent_active">{{ rc_dashboard.urgent_active }}</span><span class="rc-kpi__label">Active urgent responses</span></div>
+    <div class="rc-kpi"><span class="rc-kpi__value" data-rc-kpi="last_24h">{{ rc_dashboard.last_24h }}</span><span class="rc-kpi__label">New in last 24 hours</span></div>
+    <div class="rc-kpi"><span class="rc-kpi__value" data-rc-kpi="total">{{ rc_dashboard.total }}</span><span class="rc-kpi__label">All reports</span></div>
+  </div>
+
+  <h2 class="rc-section-title">Reports by status</h2>
+  <div class="rc-status-cards">
+    {% for card in rc_dashboard.status_cards %}
+    <a class="rc-status-card rc-status-card--{{ card.key }}" href="{{ card.url }}">
+      <span class="rc-status-card__count" data-rc-status="{{ card.key }}">{{ card.count }}</span>
+      <span class="rc-status-card__label">{{ card.label }}</span>
+    </a>
+    {% endfor %}
+  </div>
+
+  <div class="module rc-recent">
+    <table>
+      <caption>Recent reports</caption>
+      <thead>
+        <tr><th scope="col">Report</th><th scope="col">Type</th><th scope="col">Status</th><th scope="col">Received</th></tr>
+      </thead>
+      <tbody id="rc-recent-body">
+        {% for report in rc_dashboard.recent %}
+        <tr>
+          <th scope="row"><a href="{{ report.url }}">#{{ report.id }}</a></th>
+          <td>{{ report.type }}</td>
+          <td><span class="rc-badge rc-badge--{{ report.status }}">{{ report.status_label }}</span></td>
+          <td>{{ report.created_at|date:"M j, Y g:i A" }}</td>
+        </tr>
+        {% empty %}
+        <tr data-rc-empty><td colspan="4">No reports have been submitted yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <p class="rc-quicklinks">
+    <a class="button" href="{{ rc_dashboard.changelist_url }}">View all reports</a>
+    {% if perms.auth.add_user %}<a class="button" href="{% url 'admin:auth_user_add' %}">Add staff account</a>{% endif %}
+  </p>
+</section>
+{% endif %}
+{{ block.super }}
+{% endblock %}

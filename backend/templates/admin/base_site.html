@@ -1,0 +1,53 @@
+{% extends "admin/base.html" %}
+{% load i18n static %}
+
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:_('RescueConnect Admin Portal') }}{% endblock %}
+
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" href="{% static 'rescueconnect/admin.css' %}">{% endblock %}
+
+{% block branding %}
+<div id="site-name">
+  <a class="rc-brand" href="{% url 'admin:index' %}">
+    {% include "admin/rescueconnect/emblem.html" %}
+    <span class="rc-brand__text">
+      <strong>{{ site_header|default:"RescueConnect" }}</strong>
+      <small>Flood Emergency Response Coordination System</small>
+    </span>
+  </a>
+  {% if rc_lgu_name %}<span class="rc-brand__lgu">{{ rc_lgu_name }}</span>{% endif %}
+</div>
+{% if user.is_anonymous %}
+  {% include "admin/color_theme_toggle.html" %}
+{% endif %}
+{% endblock %}
+
+{% block nav-global %}{% endblock %}
+
+{% block welcome-msg %}{{ block.super }}
+{% if has_permission and perms.reports.view_emergencyreport and not is_popup %}
+<span class="rc-live">
+  <a id="rc-bell" class="rc-bell" href="{% url 'admin:reports_emergencyreport_changelist' %}" aria-label="New reports">
+    <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12 22a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 12 22zm7-6v-5a7 7 0 0 0-5-6.7V3a2 2 0 1 0-4 0v1.3A7 7 0 0 0 5 11v5l-2 2v1h18v-1z"/></svg>
+    <span id="rc-bell-count" class="rc-bell__count" hidden>0</span>
+  </a>
+  <button id="rc-sound" class="rc-sound" type="button" aria-pressed="true" title="Turn the new-report alert sound on or off">Sound on</button>
+</span>
+{% endif %}
+{% endblock %}
+
+{% block extrabody %}
+{% if has_permission and perms.reports.view_emergencyreport and not is_popup %}
+<div id="rc-toasts" class="rc-toasts" aria-live="polite"></div>
+<script src="{% static 'rescueconnect/live.js' %}" defer
+        data-endpoint="{% url 'admin:rc_live_reports' %}"
+        data-list-url="{% url 'admin:reports_emergencyreport_changelist' %}"
+        data-interval="{{ rc_live_interval_ms }}"></script>
+{% endif %}
+{% endblock %}
+
+{% block footer %}
+<div class="rc-footer">
+  <strong>RescueConnect</strong> &middot; Flood Emergency Response Coordination System<br>
+  Authorized use only. Changes made in this panel are recorded.
+</div>
+{% endblock %}

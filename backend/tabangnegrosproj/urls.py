@@ -9,10 +9,7 @@ from .views import serve_react
 def health_check(request):
     return JsonResponse({"status": "ok", "service": "RescueConnect API"})
 
-# Configure Django Admin interface
-admin.site.site_header = "RescueConnect Admin"
-admin.site.site_title = "RescueConnect Admin Portal"
-admin.site.index_title = "Welcome to RescueConnect Portal"
+# Admin branding (header, title, dashboard) lives in tabangnegrosproj/admin_site.py.
 
 urlpatterns = [
     path('admin/', admin.site.urls),

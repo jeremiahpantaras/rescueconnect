@@ -7,6 +7,7 @@ from .views import (
     EmergencyReportUpdateView,
     get_active_reports,
     get_reports_by_area,
+    report_status,
     update_report_status,
     admin_login,
     admin_logout
@@ -14,6 +15,7 @@ from .views import (
 
 urlpatterns = [
     path('send/', EmergencyReportCreateView.as_view(), name='send_report'),
+    path('status/<str:code>/', report_status, name='report_status'),  # public: citizen status page
     path('all/', EmergencyReportListView.as_view(), name='all_reports'),
     path('update/<int:pk>/', EmergencyReportUpdateView.as_view(), name='update_report'),
     path('active/', get_active_reports, name='active_reports'),

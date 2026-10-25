@@ -23,13 +23,16 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
+def env_list(name, default=""):
+    """Read a comma-separated environment variable as a list."""
+    return [item.strip() for item in os.getenv(name, default).split(",") if item.strip()]
+
+ALLOWED_HOSTS = env_list("ALLOWED_HOSTS", "localhost,127.0.0.1")
 if os.getenv("RENDER"):
-    ALLOWED_HOSTS = ["tabangnegros.onrender.com", "*.onrender.com", "localhost", "127.0.0.1"]
-else:
-    ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+    ALLOWED_HOSTS += ["tabangnegros.onrender.com", ".onrender.com"]
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
+    'tabangnegrosproj.admin_config.RescueConnectAdminConfig',  # replaces django.contrib.admin
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -54,21 +57,25 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# Origins that may call the API from a browser. Add more (e.g. a LAN address for phone
+# testing or the deployed Next.js site) with the comma-separated CORS_ALLOWED_ORIGINS env var.
 CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
     "http://localhost:5173",
     "http://127.0.0.1:5173",
     "capacitor://localhost",
     "http://localhost",
-]
-
-CORS_ALLOW_ALL_ORIGINS = True
+    "https://localhost",  # Capacitor Android (androidScheme: https)
+] + env_list("CORS_ALLOWED_ORIGINS")
 
 ROOT_URLCONF = 'tabangnegrosproj.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'staticfiles')],
+        # templates/ holds the RescueConnect admin overrides and must come first.
+        'DIRS': [os.path.join(BASE_DIR, 'templates'), os.path.join(BASE_DIR, 'staticfiles')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -120,6 +127,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'Asia/Manila'
+# 12-hour clock with AM/PM everywhere (see tabangnegrosproj/formats/en/formats.py)
+FORMAT_MODULE_PATH = ['tabangnegrosproj.formats']
 USE_I18N = True
 USE_TZ = True
 
@@ -152,8 +161,19 @@ WHITENOISE_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Optional name of the Local Government Unit, shown in the admin header (empty = hidden).
+RESCUECONNECT_LGU_NAME = os.getenv('RESCUECONNECT_LGU_NAME', '')
+
+# How often open staff pages in the admin check for new reports (seconds, minimum 3).
+RESCUECONNECT_LIVE_POLL_SECONDS = int(os.getenv('RESCUECONNECT_LIVE_POLL_SECONDS', '8'))
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
+    ],
+    # Deny by default: only authenticated staff. Public endpoints (report submission,
+    # staff login) opt out explicitly in reports/views.py.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAdminUser',
     ],
 }
