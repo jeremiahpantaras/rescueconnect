@@ -8,7 +8,7 @@ Last verified: 2026-10-25 against `development` @ `c9ce45b` plus uncommitted fix
 | `backend/` | Django 5.2.8 + DRF 3.16.1 API. Project package `tabangnegrosproj/`, single app `reports/`. Local venv `backend/virt` (gitignored, Python 3.14.6). |
 | `frontend/` | **Current** Next.js 16.3.4 / React 19.2.8 / TS strict / Tailwind v4 app (`src/app`, `src/components`). |
 | `frontend_legacy/` | Old Vite + React + Capacitor app (citizen `App.jsx`, `AdminDashboard.jsx`, `Login.jsx`). Kept for reference. |
-| `backend/staticfiles/` | Committed Vite build of the legacy app, served by Django's `serve_react` catch-all. |
+| `backend/staticfiles/` | Leftover committed Vite build of the legacy app, no longer routed (`/index.html` and `/assets/...` are still reachable through WhiteNoise; deleting them is proposal P8). `sw.js` here is now a self-removing worker that repairs browsers holding the old one: keep it at this address. |
 | `docs/` | Older planning docs (`frontend-codebase-analysis.md` is **stale**: describes `frontend/` as Vite). `docs/claude/` = these notes. |
 | `.agents/rules/rescueconnect.md` | Project rules for agents. |
 | `instructions.txt`, `README.md`, `backend/README.md` | Legacy TabangNegros docs (SQLite claim, Vite ports, `.env.example` are wrong for this repo). |
@@ -32,7 +32,7 @@ Last verified: 2026-10-25 against `development` @ `c9ce45b` plus uncommitted fix
 
 Default permission is `IsAdminUser` (`settings.py` `REST_FRAMEWORK`); a missing/invalid token gives 401, a non-staff user 403.
 
-Other: `/admin/` (Django admin; `EmergencyReport` is **not registered**), `/health/`, `/media/<path>` (Django `serve`), catch-all `serve_react` (last).
+Other: `/admin/` (Django admin; `EmergencyReport` is **not registered**), `/health/`, `/media/<path>` (Django `serve`), `/` redirects to `/admin/`. The old `serve_react` catch-all is gone: `/admin` redirects to `/admin/` and unknown addresses return 404.
 
 ## Django admin (staff portal) — `/admin/`
 - Custom site `tabangnegrosproj/admin_site.py` (`RescueConnectAdminSite`, wired by `admin_config.py` in `INSTALLED_APPS` instead of `django.contrib.admin`): branding, "Operations Dashboard" (counts, status cards, 8 recent reports), `site_url = None` (no "View site" link).
@@ -87,7 +87,7 @@ Other: `/admin/` (Django admin; `EmergencyReport` is **not registered**), `/heal
 ### After the first fix pass (same day)
 | Check | Result |
 |---|---|
-| `manage.py test reports` | 118 tests, OK (22 API + 42 admin + 33 tracking/status/resolved-time + 5 time-format + 16 store-and-forward, incl. two migration tests on pre-existing reports) (creates and destroys a `test_*` Postgres database; Cloudinary uploads mocked) |
+| `manage.py test reports` | 124 tests, OK (22 API + 42 admin + 33 tracking/status/resolved-time + 5 time-format + 16 store-and-forward + 6 routing, incl. two migration tests on pre-existing reports) (creates and destroys a `test_*` Postgres database; Cloudinary uploads mocked) |
 | `manage.py check`, `makemigrations --check --dry-run` | clean, no model changes (no new migration) |
 | `npx tsc --noEmit`, `npx eslint src` | exit 0 |
 | `npx next build` | compiled and generated static pages; `.pb-safe` rule present in built CSS |
@@ -100,7 +100,7 @@ Other: `/admin/` (Django admin; `EmergencyReport` is **not registered**), `/heal
 2. `STATICFILES_STORAGE` (`settings.py`) was removed in Django 5.1+; likely ignored (**Unverified**).
 3. `next/font/google` (Inter) needs network access at build time.
 4. Windows: `build.sh` is bash-only; local dev needs PostgreSQL; GDAL/GEOS paths are POSIX-gated and unused (GeoDjango not installed).
-5. Legacy admin dashboard (compiled build served from `backend/staticfiles/`) now gets 401 on every staff call.
+5. The legacy app is retired from routing (D28). If the backend is deployed from this branch, `/` no longer serves the old citizen app, so the Next.js frontend must be deployed for citizens.
 6. Production environment variables (`ALLOWED_HOSTS`, `CORS_ALLOWED_ORIGINS` for the deployed Next.js site, `NEXT_PUBLIC_API_URL`) must be set; a production frontend build without `NEXT_PUBLIC_API_URL` shows a configuration error instead of submitting.
 
 ## Open questions

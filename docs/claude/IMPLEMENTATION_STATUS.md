@@ -72,6 +72,7 @@ Status legend: Implemented and evidenced · Partially implemented · Planned but
 | — | Login throttle (10/min) added (not in the original audit) | `views.py` | Tested |
 | — | `EmergencyReport` registered in Django admin | `reports/admin.py` | `manage.py check` |
 | M4 | **Withdrawn.** Cloudinary's `pre_save` already rewinds the file; an explicit `seek(0)` was added anyway | `validate_photo` | Code read |
+| — | `/admin` (no slash) and browsers holding an old site-wide worker showed the old Tabang Negros app. Catch-all removed; `/sw.js` now removes the old worker | `tabangnegrosproj/urls.py`, `staticfiles/sw.js` | 6 routing tests; reproduced and healed in real Firefox with the old worker confirmed on disk beforehand. Chrome/Edge and the owner's Windows device not tested |
 | — | Throttles shared one counter per IP (default `anon` scope): staff-login attempts and (new) status polling would have eaten the 10/hour report quota. Each throttle now has its own scope | `reports/views.py` | Tested; the new tests fail when the old shared scope is restored |
 
 ## Still open

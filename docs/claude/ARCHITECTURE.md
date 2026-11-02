@@ -12,7 +12,7 @@ Browser (Next.js client, frontend/)
                            ├─ validates (views.py:26-69 + serializer)
                            ├─ PostgreSQL (EmergencyReport)
                            └─ Cloudinary (photo1, photo2)
-Legacy: frontend_legacy build ──► backend/staticfiles ──► Django serve_react catch-all
+Legacy: frontend_legacy build left in backend/staticfiles, no longer routed; / redirects to /admin/ (D28)
 ```
 - Frontend and backend are separate processes. Next.js has a single client-rendered page; there is no Next.js API route, server action, or middleware. All backend calls go through `frontend/src/lib/api.ts` (`submitReport`).
 - Update mechanism: ordinary REST requests. No WebSockets or SSE. **Staff live updates (D21):** every open Django-admin page for a user with report access polls `GET /admin/live-reports/?after=<last id>` (session-authenticated, staff only; `tabangnegrosproj/admin_site.py` -> `reports/dashboard.live_snapshot`) every `RESCUECONNECT_LIVE_POLL_SECONDS` (default 8 s; paused in hidden tabs; backs off on errors). The response carries new reports (newest 20, plus the true count), the newest id, and dashboard counts. `static/rescueconnect/live.js` renders toasts, a header bell badge, an optional alert sound, live dashboard numbers and rows, and a "Refresh list" bar on the report list. `frontend/` (citizen app) has no polling. (Legacy admin polled every 10 s.)
@@ -104,7 +104,7 @@ Points the diagram raises that need owner confirmation before implementation (se
 1. ~~Photos "up to two" vs backend "exactly two"~~ — resolved: backend and forms now accept 0–2.
 2. Report type needed vs absent field (prefix workaround still in place).
 3. ~~Role-based access intended vs everything public~~ — partly resolved: staff-only reads/updates now enforced; responder vs LGU-admin roles still absent.
-4. Next.js frontend vs Django still serving a committed Vite build via catch-all (unchanged).
+4. ~~Django serving the Vite build via a catch-all~~ — catch-all removed (D28); the build files themselves remain (P8).
 5. READMEs describe SQLite/Vite/TabangNegros; code is PostgreSQL-only/Next.js/RescueConnect (unchanged).
 6. ~~Success copy says responders are notified~~ — resolved: copy corrected.
 7. Context diagram shows severity, videos, push notifications, availability, announcements, analytics, and role configuration; none exist.

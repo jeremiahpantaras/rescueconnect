@@ -392,7 +392,7 @@ class LiveUpdatesTests(AdminTestCase):
 
     def test_the_script_never_writes_html(self):
         import pathlib
-        source = (pathlib.Path(__file__).parent / 'static/rescueconnect/live.js').read_text()
+        source = (pathlib.Path(__file__).parent / 'static/rescueconnect/live.js').read_text(encoding='utf-8')
         for forbidden in ('innerHTML', 'outerHTML', 'insertAdjacentHTML', 'document.write', 'eval('):
             self.assertNotIn(forbidden, source)
 
